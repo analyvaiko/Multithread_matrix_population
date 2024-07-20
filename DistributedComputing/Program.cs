@@ -60,20 +60,20 @@ namespace Lab01
             if (treadscnt > 1)
                 return MTSortRowsWithThreads(a, treadscnt);
             else
-                return SortRows(a,0);
+                return SortRows(a,0,1);
         }
 
 
 
-        static SqrMatrix MTSortRowsWithThreads(SqrMatrix a, int treadscnt)
+        static SqrMatrix MTSortRowsWithThreads(SqrMatrix a, int threadscnt)
         {
 
             List<Thread> threads = new List<Thread>();
 
             // Adding threads
-            for (int i = 0; i < treadscnt; i++)
+            for (int i = 0; i < threadscnt; i++)
             {
-                Thread thread = new Thread(() => SortRows(a, i));
+                Thread thread = new Thread(() => SortRows(a, i, threadscnt));
                 threads.Add(thread);
                 thread.Start();
             }
@@ -86,9 +86,9 @@ namespace Lab01
         }
 
         // Sort in loop
-        static SqrMatrix SortRows(SqrMatrix a, int k)
+        static SqrMatrix SortRows(SqrMatrix a, int start, int k)
         {
-            for (int i = k; i < a.GetLen(); i += k+1)
+            for (int i = start; i < a.GetLen(); i += k)
                 for (int j = 0; j < a.GetLen(); j++)
                 {
                     if (a[i, j] > a[i, i] && j != i)
@@ -120,7 +120,17 @@ namespace Lab01
                 Console.Write("\n Define the size of the square matrix:");
                 String val =  Console.ReadLine();
                 if (!string.IsNullOrEmpty(val))
-                    size = Convert.ToInt32(val);
+                {
+                    try
+                    {
+                        size = Convert.ToInt32(val);
+                    }
+                    catch
+                    {
+                        ArgumentException e;
+                    }
+                }
+                    
 
                 if (size < 2)
                 {
@@ -136,7 +146,17 @@ namespace Lab01
                 int threadscnt = 0;
                 SqrMatrix B = A;
                 Console.Write("\n Define the number of parrallel threads:");
-                threadscnt = Convert.ToInt32(Console.ReadLine());
+                String val = Console.ReadLine();
+                if (!string.IsNullOrEmpty(val))
+                    try 
+                    { 
+                        threadscnt = Convert.ToInt32(val);
+                    }
+                    catch { 
+                        ArgumentException e;
+                          }
+                        
+                    
                 if (threadscnt < 1)
                 {
                     Console.WriteLine("\n The value {0} is not correct", threadscnt);
@@ -154,7 +174,7 @@ namespace Lab01
 
                     sw.Stop();
 
-                    Console.WriteLine("\n Elapsed={0}", sw.Elapsed);
+                    Console.WriteLine("\n Elapsed={0}", sw.Elapsed.TotalSeconds);
                       
                     
                 }
